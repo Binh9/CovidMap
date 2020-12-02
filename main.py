@@ -37,15 +37,16 @@ countries = json_normalize(summary['Countries'])
 df = pd.DataFrame(countries)
 clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
 
-clean_countries['Slug'] = clean_countries['Slug'].str.capitalize() 
+# clean_countries['Slug'] = clean_countries['Slug'].str.capitalize() 
 
-# print(clean_countries.loc[clean_countries['Country'] == 'Russian Federation'])
+print(clean_countries.loc[clean_countries['Country'] == 'Viet Nam'])
 
 # Base map
 base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5)
 
 # Obtain geodata 
-folium_url = 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data'
+
+folium_url = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data'
 world_countries = f'{folium_url}/world-countries.json'
 
 
