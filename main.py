@@ -41,7 +41,7 @@ clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
 # print(clean_countries.loc[clean_countries['Country'] == 'Viet Nam'])
 
 # Base map
-base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5)
+base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True)
 
 # Obtain geodata 
 folium_url = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data'
@@ -55,31 +55,37 @@ folium.Choropleth(
         data = clean_countries,
         columns = ['Country', 'TotalConfirmed'],
         key_on = 'feature.properties.name',
-        fill_color = 'OrRd',
+        fill_color = 'YlOrRd',
         nan_fill_color = 'black',
-        fill_opacity = 0.55,
+        fill_opacity = 0.4,
         line_opacity = 0.2,
         legend_name = 'Total Confirmed COVID-19 Cases',
         ).add_to(base_map)
 
 # Generate circular markers
-clean_countries.update(clean_countries['TotalConfirmed'].map('Total Confirmed: {}'.format))
+# clean_countries.update(clean_countries['TotalConfirmed'].map('Total Confirmed: {}'.format))
 
 # Get Countries Coordinates
-country_coordinates = pd.read_csv('https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv')
+country_coordinates = pd.read_csv('https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/countries-coordinates.csv')
 
 # Merge the coordinates with covid info
 merged_countries = pd.merge(clean_countries, country_coordinates, on='Country')
 
+# print(merged_countries)
+
 def plotDot(point):
-    folium.CircleMarker(location = [point.Latitude, point.Longtitude],
+    lat = float(point.Latitude.replace('"', ''))
+    log = float(point.Longitude.replace('"', ''))
+    folium.CircleMarker(location = [lat, log],
                         radius = 5,
                         weight = 2,
-                        popup = [point.Country, point.TotalConfirmed],
-                        fill_color = 'red').add_to(base_map) 
+                        popup = f'{point.Country}: {point.TotalConfirmed}',
+                        color='red',
+                        fill_color ='red').add_to(base_map) 
+    
+# #3186cc
     
 merged_countries.apply(plotDot, axis=1)
 base_map.fit_bounds(base_map.get_bounds())
 
-print(merged_countries)
 base_map.save('map.html')
