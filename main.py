@@ -38,17 +38,14 @@ df = pd.DataFrame(countries)
 clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
 
 # clean_countries['Slug'] = clean_countries['Slug'].str.capitalize() 
-
-print(clean_countries.loc[clean_countries['Country'] == 'Viet Nam'])
+# print(clean_countries.loc[clean_countries['Country'] == 'Viet Nam'])
 
 # Base map
 base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5)
 
 # Obtain geodata 
-
 folium_url = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data'
 world_countries = f'{folium_url}/world-countries.json'
-
 
 # Generate Choropleth Map Layer
 folium.Choropleth(
@@ -60,10 +57,29 @@ folium.Choropleth(
         key_on = 'feature.properties.name',
         fill_color = 'OrRd',
         nan_fill_color = 'black',
-        fill_opacity = 0.7,
+        fill_opacity = 0.55,
         line_opacity = 0.2,
         legend_name = 'Total Confirmed COVID-19 Cases',
-        legend_color = 'white',
         ).add_to(base_map)
 
+# Generate circular markers
+clean_countries.update(clean_countries['TotalConfirmed'].map('Total Confirmed: {}'.format))
+
+# Get Countries Coordinates
+country_coordinates = pd.read_csv('https://gist.githubusercontent.com/tadast/8827699/raw/f5cac3d42d16b78348610fc4ec301e9234f82821/countries_codes_and_coordinates.csv')
+
+# Merge the coordinates with covid info
+merged_countries = pd.merge(clean_countries, country_coordinates, on='Country')
+
+def plotDot(point):
+    folium.CircleMarker(location = [point.Latitude, point.Longtitude],
+                        radius = 5,
+                        weight = 2,
+                        popup = [point.Country, point.TotalConfirmed],
+                        fill_color = 'red').add_to(base_map) 
+    
+merged_countries.apply(plotDot, axis=1)
+base_map.fit_bounds(base_map.get_bounds())
+
+print(merged_countries)
 base_map.save('map.html')
