@@ -8,6 +8,7 @@ import json
 import folium
 import http.client
 import pandas as pd
+import matplotlib.pyplot as plt
 from pandas.io.json import json_normalize 
 
 api = "api.covid19api.com"
@@ -16,6 +17,9 @@ query = '/summary'   # a summary of new and total cases per country updated dail
 # Geodata
 WORLD_COUNTRIES = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/world-countries.json'
 COUNTRY_COORDINATES = pd.read_csv('https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/countries-coordinates.csv')
+
+TIME_COUNTRIES = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
+WORLD_AGGREGATED = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/worldwide-aggregate.csv'
 
 # Access Data via API
 conn = http.client.HTTPSConnection(api)
@@ -98,14 +102,82 @@ base_map.fit_bounds(base_map.get_bounds())
 # base_map.save('testing.html')
 
 
-merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
+merged_countries = merged_countries.sort_values(by=['TotalConfirmed'],
+                                                ascending=False)
 
-def plotTopN(dtFrame, topN):
-    slicedDt = dtFrame.head(topN)
+time_covid = pd.read_csv(TIME_COUNTRIES)
+time_confirmed_covid = time_covid.pivot(index='Date',
+                                        columns='Country',
+                                        values='Deaths')
+
+world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
+
+print(world_aggregated_covid['Confirmed'])
+
+
+# Translating to python datatime
+index = pd.date_range(start = time_confirmed_covid.index[0],
+                      end = time_confirmed_covid.index[-1],
+                      )
+index = [pd.to_datetime(date, format='%Y-%m-%d').date() for date in index]
+
+# Plot the time series of 
+def plotTopN(topN):
+    slicedDt = merged_countries.head(topN)
     top_countries = slicedDt['Country'].values.tolist()
+    
+    # Fixing the countries name that data works with
+    for i, country in enumerate(top_countries):
+        if country == "United States of America":
+            top_countries[i] = 'US'
+        elif country == "Russian Federation":
+            top_countries[i] = 'Russia'
     print(top_countries)
+    
+    top_time_confirmed_covid = time_confirmed_covid[top_countries]
 
-plotTopN(merged_countries, 7)
+    top_time_confirmed_covid.reset_index()
+    
+    # Reformat dataframe to use datetime as indices
+    reformatted_dt = pd.DataFrame(data = top_time_confirmed_covid.values,
+                                  index = index,
+                                  columns=top_countries)
+    
+    plt.style.use('ggplot')
+    reformatted_dt.plot(figsize=(10, 6),
+                        title  = 'COVID-19 Deaths by Country')
+    plt.xlabel('Dates')
+    plt.ylabel('Total # of Deaths')
+    
+
+#plotTopN(7)
+    
+def plotWorld():
+    # Transform values to thousands for better readability
+    cases_in_thousands = [val / 1000 for val in world_aggregated_covid['Confirmed'].tolist()]
+    world_dt = pd.DataFrame(data = cases_in_thousands,
+                            index = index,
+                            columns = ['World Aggregated'])
+    
+#   # Custom yticks    
+#    ytick_list = []
+#    interval = world_dt.iloc[-1]['World Aggregated'] / 6
+#    start = 0
+#    for i in range(7):
+#        ytick_list.append(start)
+#        start += interval
+#        
+#    print(ytick_list)
+    
+    plt.style.use('ggplot')
+    world_dt.plot(figsize=(10, 6),
+                  title  = 'World COVID-19 Confirmed Cases',)
+#                  yticks = ytick_list)
+    plt.xlabel('Dates')
+    plt.ylabel('Total # of Confirmed Cases (in thousands)')
+               
+plotWorld()
+           
 
 
     
