@@ -6,16 +6,16 @@
 
 import json
 import folium
-import requests
-import mimetypes
 import http.client
 import pandas as pd
 from pandas.io.json import json_normalize 
 
-
 api = "api.covid19api.com"
-
 query = '/summary'   # a summary of new and total cases per country updated daily
+
+# Geodata
+WORLD_COUNTRIES = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/world-countries.json'
+COUNTRY_COORDINATES = pd.read_csv('https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/countries-coordinates.csv')
 
 # Access Data via API
 conn = http.client.HTTPSConnection(api)
@@ -43,13 +43,9 @@ clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
 # Base map
 base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True)
 
-# Obtain geodata 
-folium_url = 'https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data'
-world_countries = f'{folium_url}/world-countries.json'
-
 # Generate Choropleth Map Layer
 folium.Choropleth(
-        geo_data = world_countries,
+        geo_data = WORLD_COUNTRIES,
         min_zoom = 2,
         name = "COVID-19",
         data = clean_countries,
@@ -62,14 +58,25 @@ folium.Choropleth(
         legend_name = 'Total Confirmed COVID-19 Cases',
         ).add_to(base_map)
 
+#folium.Choropleth(
+#        geo_data = world_countries,
+#        min_zoom = 2,
+#        name = "COVID-19",
+#        data = clean_countries,
+#        columns = ['Country', 'TotalConfirmed'],
+#        key_on = 'feature.properties.name',
+#        fill_color = 'YlOrRd',
+#        nan_fill_color = 'black',
+#        fill_opacity = 0.4,
+#        line_opacity = 0.2,
+#        legend_name = 'New Recovered COVID-19 Cases',
+#        ).add_to(base_map)
+
 # Generate circular markers
 # clean_countries.update(clean_countries['TotalConfirmed'].map('Total Confirmed: {}'.format))
 
-# Get Countries Coordinates
-country_coordinates = pd.read_csv('https://raw.githubusercontent.com/Binh9/CovidMap/main/examples/data/countries-coordinates.csv')
-
 # Merge the coordinates with covid info
-merged_countries = pd.merge(clean_countries, country_coordinates, on='Country')
+merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
 
 # print(merged_countries)
 
@@ -88,4 +95,18 @@ def plotDot(point):
 merged_countries.apply(plotDot, axis=1)
 base_map.fit_bounds(base_map.get_bounds())
 
-base_map.save('map.html')
+# base_map.save('testing.html')
+
+
+merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
+
+def plotTopN(dtFrame, topN):
+    slicedDt = dtFrame.head(topN)
+    top_countries = slicedDt['Country'].values.tolist()
+    print(top_countries)
+
+plotTopN(merged_countries, 7)
+
+
+    
+

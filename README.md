@@ -6,7 +6,7 @@ Data is accessed from publicly available API: CORONAVIRUS COVID19 API -- https:/
 
 
 ### What to plot?
- - General global map
+ - General global maps
  - Top 5 countries and their progression
  - Overall list of all the data for countries 
 
