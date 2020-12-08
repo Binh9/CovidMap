@@ -65,7 +65,7 @@ base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True
 # APP LAYOUT
 app.layout = html.Div(children = [
     html.Div(children = [
-        html.H1(children = "COVID-19 DASHBOARD")]),
+        html.H1(id = 'project-title', children = "COVID-19 DASHBOARD", style = {'margin' : '10px'})]),
 
     html.Div(children = [
         html.Div(children = [
@@ -93,7 +93,7 @@ app.layout = html.Div(children = [
     html.Div(children = '''
         PLACEHOLDER FOR ADDITIONAL VISUALS
     '''),
-], style = {'textAlign': 'center', 'height': '100%', 'border-style': 'groove'})
+], style = {'textAlign': 'center', 'height': '100vh', 'border-style': 'groove'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
