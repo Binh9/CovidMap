@@ -68,32 +68,31 @@ app.layout = html.Div(children = [
         html.H1(id = 'project-title', children = "COVID-19 DASHBOARD", style = {'margin' : '10px'})]),
 
     html.Div(children = [
-        html.Div(children = [
-            html.Div(children = 'Total Confirmed Cases'), 
-            html.Div(id = 'total-confirmed', children = f'{global_df.TotalConfirmed[0]:,}')], 
-            style = {'display': 'table-cell'}),
-        html.Div(children = [
-            html.Div(children = 'Total Death'), 
-            html.Div(id = 'total-deaths', children = f'{global_df.TotalDeaths[0]:,}')],
-            style = {'display': 'table-cell'}),
-        html.Div(children = [
-            html.Div(children = 'Total Recovered Cases'), 
-            html.Div(id = 'total-recovered', children = f'{global_df.TotalRecovered[0]:,}')],
-             style = {'display': 'table-cell'}),
-        ], style = {'display': 'table', 'width': '100%', 'border-style': 'groove'}),
 
-    html.Div(children = '''
-        PLACEHOLDER FOR GENERAL STAT
-    '''),
+        html.Div(children = [
+            html.Div(children = [
+                html.Div(children = 'Total Confirmed Cases'), 
+                html.Div(id = 'total-confirmed', children = f'{global_df.TotalConfirmed[0]:,}')
+            ], style = {'display': 'table-cell'}),
+            html.Div(children = [
+                html.Div(children = 'Total Death'), 
+                html.Div(id = 'total-deaths', children = f'{global_df.TotalDeaths[0]:,}')
+            ], style = {'display': 'table-cell'}),
+            html.Div(children = [
+                html.Div(children = 'Total Recovered Cases'), 
+                html.Div(id = 'total-recovered', children = f'{global_df.TotalRecovered[0]:,}')
+            ], style = {'display': 'table-cell'})
+        ], style = {'display': 'table', 'width': '100%', 'margin': '0px'})
+    ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px'}),
 
     html.Div(children = '''
         PLACEHOLDER FOR MAP
-    '''),
+    ''', style = {'border-style': 'outset', 'margin': '10px'}),
 
     html.Div(children = '''
         PLACEHOLDER FOR ADDITIONAL VISUALS
     '''),
-], style = {'textAlign': 'center', 'height': '100vh', 'border-style': 'groove'})
+], style = {'textAlign': 'center', 'height': '100vh', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
