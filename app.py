@@ -67,9 +67,20 @@ app.layout = html.Div(children = [
     html.Div(children = [
         html.H1(children = "COVID-19 DASHBOARD")]),
 
-    html.Div(children = '''
-        Dash: A web application framework for Python
-    '''),
+    html.Div(children = [
+        html.Div(children = [
+            html.Div(children = 'Total Confirmed Cases'), 
+            html.Div(id = 'total-confirmed', children = f'{global_df.TotalConfirmed[0]:,}')], 
+            style = {'display': 'table-cell'}),
+        html.Div(children = [
+            html.Div(children = 'Total Death'), 
+            html.Div(id = 'total-deaths', children = f'{global_df.TotalDeaths[0]:,}')],
+            style = {'display': 'table-cell'}),
+        html.Div(children = [
+            html.Div(children = 'Total Recovered Cases'), 
+            html.Div(id = 'total-recovered', children = f'{global_df.TotalRecovered[0]:,}')],
+             style = {'display': 'table-cell'}),
+        ], style = {'display': 'table', 'width': '100%', 'border-style': 'groove'}),
 
     html.Div(children = '''
         PLACEHOLDER FOR GENERAL STAT
@@ -82,7 +93,7 @@ app.layout = html.Div(children = [
     html.Div(children = '''
         PLACEHOLDER FOR ADDITIONAL VISUALS
     '''),
-], style = {'textAlign': 'center'})
+], style = {'textAlign': 'center', 'height': '100%', 'border-style': 'groove'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
