@@ -14,7 +14,7 @@ pip install dash
 
 ### Plan
 1. Create visual -- DONE
-2. Include Dash -- In Progress
+2. Include Dash -- DONE
 3. Include basic stat (total confirmed cases)
 4. Integrate Map with dash
 5. Include multiple maps allowing to switch between them
