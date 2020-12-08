@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 @author: Binh
 """
@@ -178,7 +176,3 @@ def plotWorld():
                
 plotWorld()
            
-
-
-    
-
