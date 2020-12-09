@@ -58,11 +58,6 @@ global_df = pd.DataFrame(global_summary)
 stats_intr = global_df.columns.tolist()
 print(global_df)
 
-# Base map
-# base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True)
-
-
-
 # -------------------------------------------------------------------------------------------------
 # APP LAYOUT
 
@@ -233,6 +228,7 @@ def render_map_content(tab):
     # Directory where the map html would be located
     dir = 'images/'
 
+    # base_map
     base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True)
 
     if tab == 'TotalConfirmed':
