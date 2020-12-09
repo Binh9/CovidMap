@@ -82,9 +82,9 @@ merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
 merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
 
 time_covid = pd.read_csv(TIME_COUNTRIES)
-time_confirmed_covid = time_covid.pivot(index='Date',
-                                        columns='Country',
-                                        values='Confirmed')
+# time_confirmed_covid = time_covid.pivot(index='Date',
+#                                         columns='Country',
+#                                         values='Confirmed')
 
 world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
 # print(world_aggregated_covid['Confirmed'])
@@ -118,7 +118,7 @@ world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
     # plt.xlabel('Dates')
     # plt.ylabel('Total # of Deaths')
 
-def plotTopN(topN, df, time_df):
+def plotTopN(topN, df, time_df, stat, title):
     # Getting the top N countries based on ....
     slicedDt = df.head(topN)
     top_countries = slicedDt['Country'].values.tolist()
@@ -132,12 +132,14 @@ def plotTopN(topN, df, time_df):
             top_countries[i] = 'Russia'
     # print(top_countries)
 
+    time_stat_covid = time_df.pivot(index = 'Date', columns = 'Country', values = stat)
+
     # Translating to python datatime
-    index = pd.date_range(start = time_df.index[0],
-                          end = time_df.index[-1])
+    index = pd.date_range(start = time_stat_covid.index[0],
+                          end = time_stat_covid.index[-1])
     index = [pd.to_datetime(date, format='%Y-%m-%d').date() for date in index]
     
-    top_time_stat_covid = time_df[top_countries]
+    top_time_stat_covid = time_stat_covid[top_countries]
     top_time_stat_covid.reset_index()
     
     # Reformat dataframe to use datetime as indices for top N countries
@@ -145,10 +147,12 @@ def plotTopN(topN, df, time_df):
                                   index = index,
                                   columns = top_countries)
 
-    fig = px.line(reformatted_dt, x = index, y = top_countries, title = 'COVID-19 Confirmed Cases by Country', labels = {'x': 'Date', 'value': 'Total Confirmed Cases', 'variable': 'Country'})
+    fig = px.line(reformatted_dt, x = index, y = top_countries, title = title, labels = {'x': 'Date', 'value': f'Total {stat} Cases', 'variable': 'Country'})
     fig.show()
     
-plotTopN(7, merged_countries, time_confirmed_covid)
+# plotTopN(7, merged_countries, time_covid, 'Confirmed', 'COVID-19 Confirmed Cases by Country')
+# plotTopN(7, merged_countries, time_covid, 'Deaths', 'COVID-19 Deaths by Country')
+plotTopN(7, merged_countries, time_covid, 'Recovered', 'COVID-19 Recovered Cases by Country')
     
 # def plotWorld():
 #     # Transform values to thousands for better readability

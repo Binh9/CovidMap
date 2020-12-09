@@ -56,7 +56,17 @@ global_df = pd.DataFrame(global_summary)
 
 # Stats interested in
 stats_intr = global_df.columns.tolist()
-print(global_df)
+
+# Merge the coordinates with covid info
+merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
+merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
+
+time_covid = pd.read_csv(TIME_COUNTRIES)
+time_confirmed_covid = time_covid.pivot(index='Date',
+                                        columns='Country',
+                                        values='Confirmed')
+
+
 
 # -------------------------------------------------------------------------------------------------
 # APP LAYOUT
@@ -171,7 +181,7 @@ app.layout = html.Div(children = [
         'PLACEHOLDER FOR ADDITIONAL VISUALS',
         
     ]),
-], style = {'textAlign': 'center', 'height': '1000px', 'border-style': 'outset'})
+], style = {'textAlign': 'center', 'height': '900px', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
