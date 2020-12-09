@@ -223,7 +223,7 @@ app.layout = html.Div(children = [
             ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'right', 'width': '600px'}),
         ], style = {'display': 'flex', 'justify-content': 'space-between'})
     ], style = {'border-style': 'outset', 'margin': '10px'}),
-], style = {'textAlign': 'center', 'height': '1200px', 'border-style': 'outset'})
+], style = {'textAlign': 'center', 'height': '1130px', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
