@@ -18,13 +18,13 @@ def plotDot(point, stat, color, base_map):
                         fill_color =color).add_to(base_map) 
 
 # Generates the interactive global map with pointers
-def generateMap(base_map, geo_data, data, stat, color_scheme, legend_name, color_pointer):
+def generateMap(base_map, geo_data, merged_data, stat, color_scheme, legend_name, color_pointer):
     # Generates the choropleth map layer and adds it on top of the base map
     folium.Choropleth(
         geo_data = geo_data,
         min_zoom = 2,
         name = "COVID-19",
-        data = data,
+        data = merged_data,
         columns = ['Country', stat],
         key_on = 'feature.properties.name',
         fill_color = color_scheme,
@@ -34,10 +34,7 @@ def generateMap(base_map, geo_data, data, stat, color_scheme, legend_name, color
         legend_name = legend_name,
         ).add_to(base_map)
 
-    # Merge the country coordinates with covid info
-    merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
-
-    merged_countries.apply(lambda x: plotDot(x, stat, color_pointer, base_map), axis=1)
+    merged_data.apply(lambda x: plotDot(x, stat, color_pointer, base_map), axis=1)
     base_map.fit_bounds(base_map.get_bounds())
 
     base_map.save(f'images/{stat}.html')
@@ -77,6 +74,7 @@ def plotTopN(topN, df, time_df, stat, title):
     fig = px.line(reformatted_dt, x = index, y = top_countries, title = title, labels = {'x': 'Date', 'value': f'Total {stat} Cases', 'variable': 'Country'})
     return fig
     
+# Generates a line graph showing the total confirmed cases/deaths/recovered over time for whole world
 def plotWorld(df):
     stats = ['Confirmed', 'Deaths', 'Recovered']
 

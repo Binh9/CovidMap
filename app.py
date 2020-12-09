@@ -270,17 +270,17 @@ def render_map_content(tab):
     base_map = folium.Map(tiles='CartoDB dark_matter', min_zoom=1.5, max_bounds=True)
 
     if tab == 'TotalConfirmed':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlOrRd', 'Total Confirmed COVID-19 Cases', 'red')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'YlOrRd', 'Total Confirmed COVID-19 Cases', 'red')
     elif tab == 'TotalDeaths':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'BuPu', 'Total COVID-19 Deaths', 'red')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'BuPu', 'Total COVID-19 Deaths', 'red')
     elif tab == 'TotalRecovered':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlGn', 'Total Recovered COVID-19 Cases', '#3186cc')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'YlGn', 'Total Recovered COVID-19 Cases', '#3186cc')
     elif tab == 'NewConfirmed':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlOrRd', 'New Confirmed COVID-19 Cases', 'red')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'YlOrRd', 'New Confirmed COVID-19 Cases', 'red')
     elif tab == 'NewDeaths':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'BuPu', 'New COVID-19 Deaths', 'red')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'BuPu', 'New COVID-19 Deaths', 'red')
     elif tab == 'NewRecovered':
-        generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlGn', 'New Recovered COVID-19 Cases', '#3186cc')
+        generateMap(base_map, WORLD_COUNTRIES, merged_countries, tab, 'YlGn', 'New Recovered COVID-19 Cases', '#3186cc')
 
     return open(f'{dir}{tab}.html', 'r').read()
 
