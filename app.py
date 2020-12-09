@@ -7,10 +7,9 @@ import json
 import folium
 import http.client
 import matplotlib.pyplot as plt
-from main import plotDot, generateMap, plotTopN, plotWorld
+from graphingFunc import plotDot, generateMap, plotTopN, plotWorld
 from pandas.io.json import json_normalize 
 from dash.dependencies import Input, Output
-
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
