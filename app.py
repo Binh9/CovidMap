@@ -78,19 +78,31 @@ app.layout = html.Div(children = [
     html.Div(children = [
         html.Div(children = [
             html.Div(children = [
-                html.Div(children = 'Total Confirmed Cases'), 
-                html.Div(id = 'total-confirmed', children = f'{global_df.TotalConfirmed[0]:,}')
+                html.Div(children = [
+                    html.Span(children = ['Total Confirmed Cases'])
+                ]), 
+                html.Div(children = [
+                    html.Span(children = [f'{global_df.TotalConfirmed[0]:,}'], style = {'color': 'red'})
+                ]), 
             ], style = {'display': 'table-cell'}),
             html.Div(children = [
-                html.Div(children = 'Total Deaths'), 
-                html.Div(id = 'total-deaths', children = f'{global_df.TotalDeaths[0]:,}')
+                html.Div(children = [
+                    html.Span(children = ['Total Deaths'])
+                ]), 
+                html.Div(children = [
+                    html.Span(children = [f'{global_df.TotalDeaths[0]:,}'], style = {'color': 'ghostwhite'})
+                ]),
             ], style = {'display': 'table-cell'}),
             html.Div(children = [
-                html.Div(children = 'Total Recovered Cases'), 
-                html.Div(id = 'total-recovered', children = f'{global_df.TotalRecovered[0]:,}')
+                html.Div(children = [
+                    html.Span(children = ['Total Recovered Cases'])
+                ]), 
+                html.Div(children = [
+                    html.Span(children = [f'{global_df.TotalRecovered[0]:,}'], style = {'color': 'forestgreen'})
+                ]),
             ], style = {'display': 'table-cell'})
         ], style = {'display': 'table', 'width': '100%', 'margin': '0px'})
-    ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px'}),
+    ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px', 'font-size': '140%', 'font-weight': 'bold'}),
 
     html.Div(children = [
         html.Div(children = [
@@ -209,7 +221,7 @@ app.layout = html.Div(children = [
             ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'right', 'width': '600px'}),
         ], style = {'display': 'flex', 'justify-content': 'space-between'})
     ], style = {'border-style': 'outset', 'margin': '10px'}),
-], style = {'textAlign': 'center', 'height': '1150px', 'border-style': 'outset'})
+], style = {'textAlign': 'center', 'height': '1130px', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
