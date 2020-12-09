@@ -52,7 +52,7 @@ def plotDot(point, stat, color, base_map):
     folium.CircleMarker(location = [lat, log],
                         radius = 5,
                         weight = 2,
-                        popup = f'{point.Country}: {point[stat]}',
+                        popup = f'{point.Country}: {point[stat]:,}',
                         color=color,
                         fill_color =color).add_to(base_map) 
 

@@ -1,17 +1,17 @@
-.jsx-2137964197{
+.jsx-2137964197 {
     background-color: rgb(34, 32, 32);
     color: white;
     line-height: 1;
 }
 
-.custom-general-tabs {
+.custom-general-tabs, .custom-map-tabs {
     border-top-left-radius: 3px;
     background-color: #171818;
     padding: 0px;
     border-bottom: 1px solid #d6d6d6;
 }
 
-.custom-general-tab {
+.custom-general-tab, .custom-map-tab {
     color: white;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: center;
 }
-.custom-general-tab--selected {
+.custom-general-tab--selected, .custom-map-tab--selected {
     color: white;
     box-shadow: 1px 1px 0px white;
     border-left: 1px solid lightgrey !important;

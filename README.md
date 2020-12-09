@@ -16,8 +16,8 @@ pip install dash
 1. Create visual -- DONE
 2. Include Dash -- DONE
 3. Include basic stat (total confirmed cases) -- DONE
-4. Integrate Map with dash
-5. Include multiple maps allowing to switch between them
+4. Integrate Map with dash -- DONE
+5. Include multiple maps allowing to switch between them -- DONE
 6. Additional maps
 7. CSS + Formatting
 8. Documentation
