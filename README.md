@@ -1,24 +1,6 @@
 # CovidMap
 A World Map Geovisualization Dashboard with COVID-19 data.
 
-### Data Source
-Data is accessed from publicly available API: CORONAVIRUS COVID19 API -- https://api.covid19api.com/
+### Available at
+https://covid19-dashboard-bl.herokuapp.com/
 
-### Installation
-pip install dash
-
-### What to plot?
- - General global maps
- - Top 5 countries and their progression
- - Overall list of all the data for countries 
-
-### Plan
-1. Create visual -- DONE
-2. Include Dash -- DONE
-3. Include basic stat (total confirmed cases) -- DONE
-4. Integrate Map with dash -- DONE
-5. Include multiple maps allowing to switch between them -- DONE
-6. Additional maps
-7. CSS + Formatting
-8. Documentation
-9. Report
