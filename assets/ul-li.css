@@ -1,0 +1,15 @@
+.general-li-row {
+    padding-left: 4px;
+    margin: 0px;
+    font-size: 130%;
+    border-bottom: 2px solid grey; 
+    line-height: 1.2;
+}
+
+.general-ul-info {
+    height: 400px;
+    list-style-type: none;
+    overflow: hidden;
+    overflow-y: scroll;
+    text-align: left;
+}

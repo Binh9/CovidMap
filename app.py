@@ -89,7 +89,6 @@ app.layout = html.Div(children = [
     html.Div(children = [
         html.Div(children = [
             html.Div(children = [
-                'PLACEHOLDER FOR LIST THINGY',
                 dcc.Tabs(id = 'general-data-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
                     dcc.Tab(
                         label = 'Total Confirmed',
@@ -110,18 +109,18 @@ app.layout = html.Div(children = [
                         selected_className = 'custom-general-tab--selected'
                     ),
                 ]),
-                html.Div(id = 'general-tabs-content')
-            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left'}),
+                html.Div(id = 'general-tabs-content', style = {})
+            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '300px'}),
             html.Div(children = [
                 'PLACEHOLDER FOR THE MAP'
             ], style = {'width': '100%'}),
-        ], style = {'display': 'flex'}),
+        ], style = {'display': 'flex', 'height': '450px'}),
     ], style = {'border-style': 'outset', 'margin': '10px'}),
 
     html.Div(children = '''
         PLACEHOLDER FOR ADDITIONAL VISUALS
     '''),
-], style = {'textAlign': 'center', 'height': '100vh', 'border-style': 'outset'})
+], style = {'textAlign': 'center', 'height': '1000px', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
@@ -131,8 +130,47 @@ app.layout = html.Div(children = [
 )
 
 def render_content(tab):
+    # work with copy
+    cc_countries = clean_countries.copy()
+    countries_by_tc = []
     if tab == 'tc':
-        return html.Div("HELLO WORLD!")
+        cc_countries = cc_countries.sort_values(by=['TotalConfirmed'], ascending = False)
+        for index, r in cc_countries.iterrows():
+            countries_by_tc.append(html.Li(
+                className = 'general-li-row',
+                children = [
+                    html.Span(children = [f'{r.TotalConfirmed:,}'], style = {'color': 'red', 'font-weight': 'bold'}),
+                    html.Span(children = [f' {r.Country}'])
+                ]))               
+        return html.Ul(
+            className = 'general-ul-info',
+            children = countries_by_tc)
+    elif tab == 'td':
+        cc_countries = cc_countries.sort_values(by=['TotalDeaths'], ascending = False)
+        for index, r in cc_countries.iterrows():
+            countries_by_tc.append(html.Li(
+                className = 'general-li-row',
+                children = [
+                    html.Span(children = [f'{r.TotalDeaths:,}'], style = {'color': 'whitesmoke', 'font-weight': 'bold'}),
+                    html.Span(children = [f' {r.Country}'])
+                ]))
+
+        return html.Ul(
+            className = 'general-ul-info',
+            children = countries_by_tc)
+    elif tab == 'tr':
+        cc_countries = cc_countries.sort_values(by=['TotalRecovered'], ascending = False)
+        for index, r in cc_countries.iterrows():
+            countries_by_tc.append(html.Li(
+                className = 'general-li-row',
+                children = [
+                    html.Span(children = [f'{r.TotalRecovered:,}'], style = {'color': 'lawngreen', 'font-weight': 'bold'}),
+                    html.Span(children = [f' {r.Country}'])
+                ]))
+
+        return html.Ul(
+            className = 'general-ul-info',
+            children = countries_by_tc)
 
 
 
