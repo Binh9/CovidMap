@@ -1,0 +1,36 @@
+.jsx-2137964197{
+    background-color: rgb(34, 32, 32);
+    color: white;
+    line-height: 1;
+}
+
+.custom-general-tabs {
+    border-top-left-radius: 3px;
+    background-color: #171818;
+    padding: 0px;
+    border-bottom: 1px solid #d6d6d6;
+}
+
+.custom-general-tab {
+    color: white;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top: 3px solid transparent !important;
+    border-left: 0px !important;
+    border-right: 0px !important;
+    border-bottom: 0px !important;
+    background-color: #171818;
+    padding: 0px !important;
+    font-family: "system-ui";
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+.custom-general-tab--selected {
+    color: white;
+    box-shadow: 1px 1px 0px white;
+    border-left: 1px solid lightgrey !important;
+    border-right: 1px solid lightgrey !important;
+    border-top: 3px solid #da0a0a !important;
+    background-color: #171818;
+}

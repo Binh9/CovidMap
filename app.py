@@ -9,6 +9,8 @@ import http.client
 import matplotlib.pyplot as plt
 from main import plotDot, generateMap
 from pandas.io.json import json_normalize 
+from dash.dependencies import Input, Output
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -68,14 +70,13 @@ app.layout = html.Div(children = [
         html.H1(id = 'project-title', children = "COVID-19 DASHBOARD", style = {'margin' : '10px'})]),
 
     html.Div(children = [
-
         html.Div(children = [
             html.Div(children = [
                 html.Div(children = 'Total Confirmed Cases'), 
                 html.Div(id = 'total-confirmed', children = f'{global_df.TotalConfirmed[0]:,}')
             ], style = {'display': 'table-cell'}),
             html.Div(children = [
-                html.Div(children = 'Total Death'), 
+                html.Div(children = 'Total Deaths'), 
                 html.Div(id = 'total-deaths', children = f'{global_df.TotalDeaths[0]:,}')
             ], style = {'display': 'table-cell'}),
             html.Div(children = [
@@ -85,9 +86,37 @@ app.layout = html.Div(children = [
         ], style = {'display': 'table', 'width': '100%', 'margin': '0px'})
     ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px'}),
 
-    html.Div(children = '''
-        PLACEHOLDER FOR MAP
-    ''', style = {'border-style': 'outset', 'margin': '10px'}),
+    html.Div(children = [
+        html.Div(children = [
+            html.Div(children = [
+                'PLACEHOLDER FOR LIST THINGY',
+                dcc.Tabs(id = 'general-data-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
+                    dcc.Tab(
+                        label = 'Total Confirmed',
+                        value = 'tc',
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected'
+                    ),
+                    dcc.Tab(
+                        label = 'Total Deaths', 
+                        value = 'td',
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected'
+                    ),
+                    dcc.Tab(
+                        label = 'Total Recovered', 
+                        value = 'tr', 
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected'
+                    ),
+                ]),
+                html.Div(id = 'general-tabs-content')
+            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left'}),
+            html.Div(children = [
+                'PLACEHOLDER FOR THE MAP'
+            ], style = {'width': '100%'}),
+        ], style = {'display': 'flex'}),
+    ], style = {'border-style': 'outset', 'margin': '10px'}),
 
     html.Div(children = '''
         PLACEHOLDER FOR ADDITIONAL VISUALS
@@ -96,13 +125,15 @@ app.layout = html.Div(children = [
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
-# @app.callback(
-#     Output(component_id='...', component_property='...'),
-#     Input(component_id='...', component_property='...')]
-# )
+@app.callback(
+    Output(component_id='general-tabs-content', component_property='children'), 
+    Input(component_id='general-data-tabs', component_property='value')
+)
 
-def update_map(fromInput):
-    return "DOSOMETHING"
+def render_content(tab):
+    if tab == 'tc':
+        return html.Div("HELLO WORLD!")
+
 
 
 # -------------------------------------------------------------------------------------------------
