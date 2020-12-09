@@ -34,36 +34,12 @@ WORLD_AGGREGATED = 'https://raw.githubusercontent.com/datasets/covid-19/master/d
 api_general = "api.covid19api.com"
 query = '/summary'   # a summary of new and total cases per country updated daily
 
-# Access live data via API
-conn = http.client.HTTPSConnection(api_general)
-payload = ''
-headers = {}
-conn.request('GET', query, payload, headers)
-res = conn.getresponse()
-data = res.read().decode('UTF-8')
+# Global variables that would be used
+clean_countries = None 
+merged_countries = None 
+time_covid = None
+world_aggregated_covid = None
 
-# Converting Data to JSON
-summary = json.loads(data)
-
-# Normalize data for each country and clean it
-countries = json_normalize(summary['Countries'])
-# Normalize global data and cleant it
-global_summary = json_normalize(summary['Global'])
-
-# Convert to DataFrame and clean the columns
-df = pd.DataFrame(countries)
-clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
-global_df = pd.DataFrame(global_summary)
-
-# Stats interested in
-stats_intr = global_df.columns.tolist()
-
-# Merge the coordinates with covid info
-merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
-
-# Read covid data over time
-time_covid = pd.read_csv(TIME_COUNTRIES)
-world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
 
 # -------------------------------------------------------------------------------------------------
 # APP LAYOUT
@@ -73,157 +49,191 @@ addit_map_tab_slct_css = {'background-color': '#171818', 'color': 'white'}
 addit_graph_tab_css = {'background-color': '#171818'}
 addit_graph_tab_slct_css = {'background-color': '#171818', 'color': 'white'}
 
-app.layout = html.Div(children = [
-    html.Div(children = [
-        html.H1(id = 'project-title', children = "COVID-19 DASHBOARD", style = {'margin' : '10px'})]),
+def serve_layout():
 
-    html.Div(children = [
-        html.Div(children = [
-            html.Div(children = [
-                html.Div(children = [
-                    html.Span(children = ['Total Confirmed Cases'])
-                ]), 
-                html.Div(children = [
-                    html.Span(children = [f'{global_df.TotalConfirmed[0]:,}'], style = {'color': 'red'})
-                ]), 
-            ], style = {'display': 'table-cell'}),
-            html.Div(children = [
-                html.Div(children = [
-                    html.Span(children = ['Total Deaths'])
-                ]), 
-                html.Div(children = [
-                    html.Span(children = [f'{global_df.TotalDeaths[0]:,}'], style = {'color': 'ghostwhite'})
-                ]),
-            ], style = {'display': 'table-cell'}),
-            html.Div(children = [
-                html.Div(children = [
-                    html.Span(children = ['Total Recovered Cases'])
-                ]), 
-                html.Div(children = [
-                    html.Span(children = [f'{global_df.TotalRecovered[0]:,}'], style = {'color': 'forestgreen'})
-                ]),
-            ], style = {'display': 'table-cell'})
-        ], style = {'display': 'table', 'width': '100%', 'margin': '0px'})
-    ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px', 'font-size': '140%', 'font-weight': 'bold'}),
+    # Access live data via API
+    conn = http.client.HTTPSConnection(api_general)
+    payload = ''
+    headers = {}
+    conn.request('GET', query, payload, headers)
+    res = conn.getresponse()
+    data = res.read().decode('UTF-8')
 
-    html.Div(children = [
-        html.Div(children = [
-            html.Div(children = [
-                dcc.Tabs(id = 'general-data-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
-                    dcc.Tab(
-                        label = 'Total Confirmed',
-                        value = 'tc',
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected'
-                    ),
-                    dcc.Tab(
-                        label = 'Total Deaths', 
-                        value = 'td',
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected'
-                    ),
-                    dcc.Tab(
-                        label = 'Total Recovered', 
-                        value = 'tr', 
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected'
-                    ),
-                ]),
-                html.Div(id = 'general-tabs-content', style = {})
-            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '300px'}),
-            html.Div(children = [
-                dcc.Tabs(id = 'map-data-tabs', value = 'TotalConfirmed', parent_className = 'custom-map-tabs', children = [
-                    dcc.Tab(
-                        label = 'Total Confirmed',
-                        value = 'TotalConfirmed',
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'New Confirmed',
-                        value = 'NewConfirmed',
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'Total Deaths', 
-                        value = 'TotalDeaths',
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'New Deaths', 
-                        value = 'NewDeaths',
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'Total Recovered', 
-                        value = 'TotalRecovered', 
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'New Recovered', 
-                        value = 'NewRecovered', 
-                        className = 'custom-map-tab',
-                        selected_className = 'custom-map-tab--selected',
-                        style = addit_map_tab_css,
-                        selected_style = addit_map_tab_slct_css,
-                    ),
-                ]),
-                html.Iframe(id = 'map', srcDoc = open('images/TotalConfirmed.html', 'r').read(), style = {'height': '100%'})
-            ], style = {'width': '100%', 'display': 'flex', 'flex-direction': 'column'}),
-        ], style = {'display': 'flex', 'height': '450px'}),
-    ], style = {'border-style': 'outset', 'margin': '10px'}),
+    # Converting Data to JSON
+    summary = json.loads(data)
 
-    html.Div(children = [
-        html.Div(children = [
+    # Normalize data for each country and clean it
+    countries = json_normalize(summary['Countries'])
+    # Normalize global data and cleant it
+    global_summary = json_normalize(summary['Global'])
+
+    # Convert to DataFrame and clean the columns
+    df = pd.DataFrame(countries)
+    global clean_countries, merged_countries, time_covid, world_aggregated_covid
+    clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
+    global_df = pd.DataFrame(global_summary)
+
+    # Merge the coordinates with covid info
+    merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
+
+    # Read covid data over time
+    time_covid = pd.read_csv(TIME_COUNTRIES)
+    world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
+
+
+    return html.Div(children = [
             html.Div(children = [
-                dcc.Tabs(id = 'graph-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
-                    dcc.Tab(
-                        label = 'Total Confirmed',
-                        value = 'tc',
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected',
-                        style = addit_graph_tab_css,
-                        selected_style = addit_graph_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'Total Deaths', 
-                        value = 'td',
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected',
-                        style = addit_graph_tab_css,
-                        selected_style = addit_graph_tab_slct_css,
-                    ),
-                    dcc.Tab(
-                        label = 'Total Recovered', 
-                        value = 'tr', 
-                        className = 'custom-general-tab',
-                        selected_className = 'custom-general-tab--selected',
-                        style = addit_graph_tab_css,
-                        selected_style = addit_graph_tab_slct_css,
-                    ),
-                ]),
-                dcc.Graph(id = 'graph-by-country', style = {'height': '500px'})
-            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '600px'}),
+                html.H1(id = 'project-title', children = "COVID-19 DASHBOARD", style = {'margin' : '10px'})]),
+
             html.Div(children = [
-                dcc.Graph(id = 'graph-world-agg', figure = plotWorld(world_aggregated_covid))
-            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'right', 'width': '600px'}),
-        ], style = {'display': 'flex', 'justify-content': 'space-between'})
-    ], style = {'border-style': 'outset', 'margin': '10px'}),
-], style = {'textAlign': 'center', 'height': '1130px', 'border-style': 'outset'})
+                html.Div(children = [
+                    html.Div(children = [
+                        html.Div(children = [
+                            html.Span(children = ['Total Confirmed Cases'])
+                        ]), 
+                        html.Div(children = [
+                            html.Span(children = [f'{global_df.TotalConfirmed[0]:,}'], style = {'color': 'red'})
+                        ]), 
+                    ], style = {'display': 'table-cell'}),
+                    html.Div(children = [
+                        html.Div(children = [
+                            html.Span(children = ['Total Deaths'])
+                        ]), 
+                        html.Div(children = [
+                            html.Span(children = [f'{global_df.TotalDeaths[0]:,}'], style = {'color': 'ghostwhite'})
+                        ]),
+                    ], style = {'display': 'table-cell'}),
+                    html.Div(children = [
+                        html.Div(children = [
+                            html.Span(children = ['Total Recovered Cases'])
+                        ]), 
+                        html.Div(children = [
+                            html.Span(children = [f'{global_df.TotalRecovered[0]:,}'], style = {'color': 'forestgreen'})
+                        ]),
+                    ], style = {'display': 'table-cell'})
+                ], style = {'display': 'table', 'width': '100%', 'margin': '0px'})
+            ], style = {'display': 'block', 'border-style': 'outset', 'margin': '10px', 'font-size': '140%', 'font-weight': 'bold'}),
+
+            html.Div(children = [
+                html.Div(children = [
+                    html.Div(children = [
+                        dcc.Tabs(id = 'general-data-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
+                            dcc.Tab(
+                                label = 'Total Confirmed',
+                                value = 'tc',
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected'
+                            ),
+                            dcc.Tab(
+                                label = 'Total Deaths', 
+                                value = 'td',
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected'
+                            ),
+                            dcc.Tab(
+                                label = 'Total Recovered', 
+                                value = 'tr', 
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected'
+                            ),
+                        ]),
+                        html.Div(id = 'general-tabs-content', style = {})
+                    ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '300px'}),
+                    html.Div(children = [
+                        dcc.Tabs(id = 'map-data-tabs', value = 'TotalConfirmed', parent_className = 'custom-map-tabs', children = [
+                            dcc.Tab(
+                                label = 'Total Confirmed',
+                                value = 'TotalConfirmed',
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'New Confirmed',
+                                value = 'NewConfirmed',
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'Total Deaths', 
+                                value = 'TotalDeaths',
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'New Deaths', 
+                                value = 'NewDeaths',
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'Total Recovered', 
+                                value = 'TotalRecovered', 
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'New Recovered', 
+                                value = 'NewRecovered', 
+                                className = 'custom-map-tab',
+                                selected_className = 'custom-map-tab--selected',
+                                style = addit_map_tab_css,
+                                selected_style = addit_map_tab_slct_css,
+                            ),
+                        ]),
+                        html.Iframe(id = 'map', srcDoc = open('images/TotalConfirmed.html', 'r').read(), style = {'height': '100%'})
+                    ], style = {'width': '100%', 'display': 'flex', 'flex-direction': 'column'}),
+                ], style = {'display': 'flex', 'height': '450px'}),
+            ], style = {'border-style': 'outset', 'margin': '10px'}),
+
+            html.Div(children = [
+                html.Div(children = [
+                    html.Div(children = [
+                        dcc.Tabs(id = 'graph-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
+                            dcc.Tab(
+                                label = 'Total Confirmed',
+                                value = 'tc',
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected',
+                                style = addit_graph_tab_css,
+                                selected_style = addit_graph_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'Total Deaths', 
+                                value = 'td',
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected',
+                                style = addit_graph_tab_css,
+                                selected_style = addit_graph_tab_slct_css,
+                            ),
+                            dcc.Tab(
+                                label = 'Total Recovered', 
+                                value = 'tr', 
+                                className = 'custom-general-tab',
+                                selected_className = 'custom-general-tab--selected',
+                                style = addit_graph_tab_css,
+                                selected_style = addit_graph_tab_slct_css,
+                            ),
+                        ]),
+                        dcc.Graph(id = 'graph-by-country', style = {'height': '500px'})
+                    ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '600px'}),
+                    html.Div(children = [
+                        dcc.Graph(id = 'graph-world-agg', figure = plotWorld(world_aggregated_covid))
+                    ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'right', 'width': '600px'}),
+                ], style = {'display': 'flex', 'justify-content': 'space-between'})
+            ], style = {'border-style': 'outset', 'margin': '10px'}),
+        ], style = {'textAlign': 'center', 'height': '1130px', 'border-style': 'outset'})
+
+app.layout = serve_layout
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
