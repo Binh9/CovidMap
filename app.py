@@ -7,7 +7,7 @@ import json
 import folium
 import http.client
 import matplotlib.pyplot as plt
-from main import plotDot, generateMap
+from main import plotDot, generateMap, plotTopN
 from pandas.io.json import json_normalize 
 from dash.dependencies import Input, Output
 
@@ -59,20 +59,20 @@ stats_intr = global_df.columns.tolist()
 
 # Merge the coordinates with covid info
 merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
-merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
+# merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
 
 time_covid = pd.read_csv(TIME_COUNTRIES)
-time_confirmed_covid = time_covid.pivot(index='Date',
-                                        columns='Country',
-                                        values='Confirmed')
-
-
+# time_confirmed_covid = time_covid.pivot(index='Date',
+#                                         columns='Country',
+#                                         values='Confirmed')
 
 # -------------------------------------------------------------------------------------------------
 # APP LAYOUT
 
 addit_map_tab_css = {'background-color': '#171818'}
 addit_map_tab_slct_css = {'background-color': '#171818', 'color': 'white'}
+addit_graph_tab_css = {'background-color': '#171818'}
+addit_graph_tab_slct_css = {'background-color': '#171818', 'color': 'white'}
 
 app.layout = html.Div(children = [
     html.Div(children = [
@@ -171,17 +171,46 @@ app.layout = html.Div(children = [
                         selected_style = addit_map_tab_slct_css,
                     ),
                 ]),
-                #html.Div(id = 'map-tabs-content', style = {})
                 html.Iframe(id = 'map', srcDoc = open('images/TotalConfirmed.html', 'r').read(), style = {'height': '100%'})
             ], style = {'width': '100%', 'display': 'flex', 'flex-direction': 'column'}),
         ], style = {'display': 'flex', 'height': '450px'}),
     ], style = {'border-style': 'outset', 'margin': '10px'}),
 
     html.Div(children = [
-        'PLACEHOLDER FOR ADDITIONAL VISUALS',
-        
-    ]),
-], style = {'textAlign': 'center', 'height': '900px', 'border-style': 'outset'})
+        html.Div(children = [
+            html.Div(children = [
+                dcc.Tabs(id = 'graph-tabs', value = 'tc', parent_className = 'custom-general-tabs', children = [
+                    dcc.Tab(
+                        label = 'Total Confirmed',
+                        value = 'tc',
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected',
+                        style = addit_graph_tab_css,
+                        selected_style = addit_graph_tab_slct_css,
+                    ),
+                    dcc.Tab(
+                        label = 'Total Deaths', 
+                        value = 'td',
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected',
+                        style = addit_graph_tab_css,
+                        selected_style = addit_graph_tab_slct_css,
+                    ),
+                    dcc.Tab(
+                        label = 'Total Recovered', 
+                        value = 'tr', 
+                        className = 'custom-general-tab',
+                        selected_className = 'custom-general-tab--selected',
+                        style = addit_graph_tab_css,
+                        selected_style = addit_graph_tab_slct_css,
+                    ),
+                ]),
+                dcc.Graph(id = 'graph-by-country', style = {'height': '500px'})
+            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '600px'}),
+            'ANOTHER ONE'
+        ], style = {'display': 'flex', })
+    ], style = {'border-style': 'outset', 'margin': '10px'}),
+], style = {'textAlign': 'center', 'height': '1150px', 'border-style': 'outset'})
 
 # -------------------------------------------------------------------------------------------------
 # Dash Components
@@ -243,25 +272,37 @@ def render_map_content(tab):
 
     if tab == 'TotalConfirmed':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlOrRd', 'Total Confirmed COVID-19 Cases', 'red')
-        # return open('images/TotalConfirmed.html', 'r').read()
     elif tab == 'TotalDeaths':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'BuPu', 'Total COVID-19 Deaths', 'red')
-        # return open('images/TotalDeaths.html', 'r').read()
     elif tab == 'TotalRecovered':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlGn', 'Total Recovered COVID-19 Cases', '#3186cc')
-        # return open('images/TotalRecovered.html', 'r').read()
     elif tab == 'NewConfirmed':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlOrRd', 'New Confirmed COVID-19 Cases', 'red')
-        # return open('images/NewConfirmed.html', 'r').read()
     elif tab == 'NewDeaths':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'BuPu', 'New COVID-19 Deaths', 'red')
-        # return open('images/NewDeaths.html', 'r').read()
     elif tab == 'NewRecovered':
         generateMap(base_map, WORLD_COUNTRIES, clean_countries, tab, 'YlGn', 'New Recovered COVID-19 Cases', '#3186cc')
-        # return open('images/NewRecovered.html', 'r').read()
 
     return open(f'{dir}{tab}.html', 'r').read()
 
+@app.callback(
+    Output(component_id='graph-by-country', component_property='figure'),
+    Input(component_id='graph-tabs', component_property='value'))
+def render_graph(tab):
+    # plot graphs for top 7 countries 
+    TOP_N = 7
+   
+    if tab == 'tc':
+        fig = plotTopN(TOP_N, merged_countries, time_covid, 'Confirmed', 'COVID-19 Confirmed Cases by Country')
+    elif tab == 'td':
+        fig = plotTopN(TOP_N, merged_countries, time_covid, 'Deaths', 'COVID-19 Deaths by Country')
+    elif tab == 'tr':
+        fig = plotTopN(TOP_N, merged_countries, time_covid, 'Recovered', 'COVID-19 Recovered Cases by Country')
+
+    fig.layout['paper_bgcolor'] = 'rgb(71, 71, 71)'
+    fig.layout['plot_bgcolor'] = 'rgb(71, 71, 71)'
+    fig.layout['font'] = {'color': 'white'}
+    return fig
 
 # -------------------------------------------------------------------------------------------------
 # Running point

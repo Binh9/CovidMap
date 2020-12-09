@@ -79,7 +79,7 @@ clean_countries = df.drop(columns=['CountryCode', 'Date'], axis=1)
 
 # Merge the coordinates with covid info
 merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
-merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
+# merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
 
 time_covid = pd.read_csv(TIME_COUNTRIES)
 # time_confirmed_covid = time_covid.pivot(index='Date',
@@ -87,38 +87,11 @@ time_covid = pd.read_csv(TIME_COUNTRIES)
 #                                         values='Confirmed')
 
 world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
-# print(world_aggregated_covid['Confirmed'])
-
-# # Plot the time series of 
-# def plotTopN(topN):
-    # # Getting the top N countries based on ....
-    # slicedDt = merged_countries.head(topN)
-    # top_countries = slicedDt['Country'].values.tolist()
     
-    # # Fixing the countries name that data works with
-    # for i, country in enumerate(top_countries):
-    #     if country == "United States of America":
-    #         top_countries[i] = 'US'
-    #     elif country == "Russian Federation":
-    #         top_countries[i] = 'Russia'
-    # print(top_countries)
-    
-    # top_time_confirmed_covid = time_confirmed_covid[top_countries]
-
-    # top_time_confirmed_covid.reset_index()
-    
-    # # Reformat dataframe to use datetime as indices
-    # reformatted_dt = pd.DataFrame(data = top_time_confirmed_covid.values,
-    #                               index = index,
-    #                               columns=top_countries)
-    
-    # plt.style.use('ggplot')
-    # reformatted_dt.plot(figsize=(10, 6),
-    #                     title  = 'COVID-19 Deaths by Country')
-    # plt.xlabel('Dates')
-    # plt.ylabel('Total # of Deaths')
-
+# Plots a line graph for top N countries based on the given stat (i.e. Confirmed/Death/Recovered)
 def plotTopN(topN, df, time_df, stat, title):
+    # Sort the given dataframe by the given data
+    df = df.sort_values(by=[f'Total{stat}'], ascending=False)
     # Getting the top N countries based on ....
     slicedDt = df.head(topN)
     top_countries = slicedDt['Country'].values.tolist()
@@ -148,11 +121,7 @@ def plotTopN(topN, df, time_df, stat, title):
                                   columns = top_countries)
 
     fig = px.line(reformatted_dt, x = index, y = top_countries, title = title, labels = {'x': 'Date', 'value': f'Total {stat} Cases', 'variable': 'Country'})
-    fig.show()
-    
-# plotTopN(7, merged_countries, time_covid, 'Confirmed', 'COVID-19 Confirmed Cases by Country')
-# plotTopN(7, merged_countries, time_covid, 'Deaths', 'COVID-19 Deaths by Country')
-plotTopN(7, merged_countries, time_covid, 'Recovered', 'COVID-19 Recovered Cases by Country')
+    return fig
     
 # def plotWorld():
 #     # Transform values to thousands for better readability

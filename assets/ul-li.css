@@ -12,4 +12,6 @@
     overflow: hidden;
     overflow-y: scroll;
     text-align: left;
+    padding: 0px;
+    margin: 0px;
 }

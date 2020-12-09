@@ -15,9 +15,9 @@
     color: white;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
-    border-top: 3px solid transparent !important;
-    border-left: 0px !important;
-    border-right: 0px !important;
+    border-top: 4px solid transparent !important;
+    border-left: 0.5px solid !important;
+    border-right: 0.5px solid !important;
     border-bottom: 0px !important;
     background-color: #171818;
     padding: 0px !important;
