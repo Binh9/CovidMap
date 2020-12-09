@@ -7,7 +7,7 @@ import json
 import folium
 import http.client
 import matplotlib.pyplot as plt
-from main import plotDot, generateMap, plotTopN
+from main import plotDot, generateMap, plotTopN, plotWorld
 from pandas.io.json import json_normalize 
 from dash.dependencies import Input, Output
 
@@ -59,12 +59,10 @@ stats_intr = global_df.columns.tolist()
 
 # Merge the coordinates with covid info
 merged_countries = pd.merge(clean_countries, COUNTRY_COORDINATES, on='Country')
-# merged_countries = merged_countries.sort_values(by=['TotalConfirmed'], ascending=False)
 
+# Read covid data over time
 time_covid = pd.read_csv(TIME_COUNTRIES)
-# time_confirmed_covid = time_covid.pivot(index='Date',
-#                                         columns='Country',
-#                                         values='Confirmed')
+world_aggregated_covid = pd.read_csv(WORLD_AGGREGATED)
 
 # -------------------------------------------------------------------------------------------------
 # APP LAYOUT
@@ -207,8 +205,10 @@ app.layout = html.Div(children = [
                 ]),
                 dcc.Graph(id = 'graph-by-country', style = {'height': '500px'})
             ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'left', 'width': '600px'}),
-            'ANOTHER ONE'
-        ], style = {'display': 'flex', })
+            html.Div(children = [
+                dcc.Graph(id = 'graph-world-agg', figure = plotWorld(world_aggregated_covid))
+            ], style = {'border-style': 'outset', 'position': 'relative', 'float': 'right', 'width': '600px'}),
+        ], style = {'display': 'flex', 'justify-content': 'space-between'})
     ], style = {'border-style': 'outset', 'margin': '10px'}),
 ], style = {'textAlign': 'center', 'height': '1150px', 'border-style': 'outset'})
 

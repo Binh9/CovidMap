@@ -123,29 +123,26 @@ def plotTopN(topN, df, time_df, stat, title):
     fig = px.line(reformatted_dt, x = index, y = top_countries, title = title, labels = {'x': 'Date', 'value': f'Total {stat} Cases', 'variable': 'Country'})
     return fig
     
-# def plotWorld():
-#     # Transform values to thousands for better readability
-#     cases_in_thousands = [val / 1000 for val in world_aggregated_covid['Confirmed'].tolist()]
-#     world_dt = pd.DataFrame(data = cases_in_thousands,
-#                             index = index,
-#                             columns = ['World Aggregated'])
-    
-# #   # Custom yticks    
-# #    ytick_list = []
-# #    interval = world_dt.iloc[-1]['World Aggregated'] / 6
-# #    start = 0
-# #    for i in range(7):
-# #        ytick_list.append(start)
-# #        start += interval
-# #        
-# #    print(ytick_list)
-    
-#     plt.style.use('ggplot')
-#     world_dt.plot(figsize=(10, 6),
-#                   title  = 'World COVID-19 Confirmed Cases',)
-# #                  yticks = ytick_list)
-#     plt.xlabel('Dates')
-#     plt.ylabel('Total # of Confirmed Cases (in thousands)')
-               
-# plotWorld()
-           
+def plotWorld(df):
+    stats = ['Confirmed', 'Deaths', 'Recovered']
+
+    # Translating to python datatime
+    index = pd.date_range(start = df['Date'].tolist()[0],
+                          end = df['Date'].tolist()[-1])
+    index = [pd.to_datetime(date, format='%Y-%m-%d').date() for date in index]
+
+    world_dt = pd.DataFrame(data = df[stats].values,
+                            index = index,
+                            columns = stats)
+
+    fig = px.line(
+        world_dt, 
+        x = index, 
+        y = stats, 
+        title = 'World COVID-19 Situation Over Time', 
+        labels = {'x': 'Date', 'value': 'World Aggregated Cases', 'variable': 'World'}
+    )
+    fig.layout['paper_bgcolor'] = 'rgb(71, 71, 71)'
+    fig.layout['plot_bgcolor'] = 'rgb(71, 71, 71)'
+    fig.layout['font'] = {'color': 'white'}
+    return fig
