@@ -31,6 +31,7 @@ def generateMap(base_map, geo_data, merged_data, stat, color_scheme, legend_name
         nan_fill_color = 'black',
         fill_opacity = 0.4,
         line_opacity = 0.2,
+        bins = [0, 100, 1000],
         legend_name = legend_name,
         ).add_to(base_map)
 
